@@ -1,0 +1,7 @@
+services:
+  3d-landing:
+    build: .
+    container_name: 3d-landing
+    restart: unless-stopped
+    ports:
+      - "8808:80"
