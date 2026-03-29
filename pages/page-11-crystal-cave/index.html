@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crystal Cave — Deep Underground</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow-x: hidden; font-family: 'Segoe UI', sans-serif; }
+    canvas { position: fixed; top: 0; left: 0; z-index: 0; }
+
+    .hero {
+      position: relative; z-index: 10;
+      height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 7rem);
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0;
+      background: linear-gradient(135deg, #67e8f9, #06b6d4, #0891b2, #164e63);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: crystalGlow 5s ease infinite;
+    }
+
+    .hero p {
+      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      color: rgba(103, 232, 249, 0.55);
+      margin-top: 1.5rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+
+    .hero .cta {
+      margin-top: 3rem;
+      padding: 1rem 3rem;
+      border: 1px solid rgba(103, 232, 249, 0.5);
+      color: #67e8f9;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.85rem;
+      pointer-events: all;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(103, 232, 249, 0.15), inset 0 0 20px rgba(103, 232, 249, 0.05);
+    }
+
+    .hero .cta:hover {
+      background: rgba(103, 232, 249, 0.1);
+      box-shadow: 0 0 50px rgba(103, 232, 249, 0.4), inset 0 0 30px rgba(103, 232, 249, 0.1);
+    }
+
+    @keyframes crystalGlow {
+      0%, 100% { background-position: 0% 50%; filter: brightness(1); }
+      50% { background-position: 100% 50%; filter: brightness(1.2); }
+    }
+
+    .section {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 6rem 2rem;
+    }
+
+    .section h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0;
+    }
+
+    .section p {
+      color: rgba(255,255,255,0.45);
+      max-width: 600px;
+      text-align: center;
+      margin-top: 1.5rem;
+      line-height: 1.9;
+      font-size: 1.05rem;
+      opacity: 0;
+    }
+
+    .crystal-line {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, #67e8f9, #06b6d4, transparent);
+      margin: 2rem auto;
+      opacity: 0;
+      box-shadow: 0 0 10px rgba(103, 232, 249, 0.6);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      width: 100%;
+      margin-top: 4rem;
+    }
+
+    .crystal-card {
+      border: 1px solid rgba(103, 232, 249, 0.15);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      opacity: 0;
+      transition: all 0.4s;
+      backdrop-filter: blur(4px);
+    }
+
+    .crystal-card:hover {
+      border-color: rgba(103, 232, 249, 0.5);
+      box-shadow: 0 0 40px rgba(103, 232, 249, 0.12), 0 -5px 30px rgba(103, 232, 249, 0.06);
+    }
+
+    .crystal-card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .crystal-card h3 {
+      color: #67e8f9;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .crystal-card p {
+      color: rgba(255,255,255,0.35);
+      font-size: 0.88rem;
+      margin-top: 0.8rem;
+      line-height: 1.7;
+    }
+
+    .scroll-indicator {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      opacity: 0;
+    }
+
+    .scroll-indicator span {
+      display: block; width: 18px; height: 18px;
+      border-right: 2px solid rgba(103,232,249,0.4);
+      border-bottom: 2px solid rgba(103,232,249,0.4);
+      transform: rotate(45deg);
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.4; }
+      50% { transform: rotate(45deg) translate(5px, 5px); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="cave"></canvas>
+
+<div class="hero">
+  <h1>Crystal Cave</h1>
+  <p>A Million Years in the Making</p>
+  <button class="cta">Enter the Deep</button>
+</div>
+
+<div class="section">
+  <h2>Formed by Time</h2>
+  <div class="crystal-line"></div>
+  <p>The largest crystals on Earth grow in caves beneath the Mexican desert — selenite spears 36 feet long, grown over 50 million years from superheated mineral-rich waters.</p>
+  <div class="grid-3">
+    <div class="crystal-card">
+      <div class="icon">❄️</div>
+      <h3>Subterranean Growth</h3>
+      <p>Crystals form as mineral-saturated water cools slowly, atom by atom layering into geometric perfection.</p>
+    </div>
+    <div class="crystal-card">
+      <div class="icon">💎</div>
+      <h3>Perfect Geometry</h3>
+      <p>The internal atomic lattice of a crystal repeats in a perfect three-dimensional pattern — nature's most elegant architecture.</p>
+    </div>
+    <div class="crystal-card">
+      <div class="icon">🔦</div>
+      <h3>Light Conduit</h3>
+      <p>Crystals bend, split, and transmit light in ways no man-made material can replicate without precise engineering.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Deep Architecture</h2>
+  <div class="crystal-line"></div>
+  <p>Caves are Earth's hidden cathedrals — vast chambers where water has spent millennia carving galleries that dwarf any human structure, lit only by the glow of mineral formations.</p>
+</div>
+
+<div class="scroll-indicator"><span></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+
+<script>
+  // Scene setup
+  const canvas = document.getElementById('cave');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x000508, 0.025);
+
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 2, 12);
+
+  // Ambient
+  const ambient = new THREE.AmbientLight(0x0a1628, 0.6);
+  scene.add(ambient);
+
+  // Cave walls (dark geometry)
+  const wallGeo = new THREE.IcosahedronGeometry(50, 2);
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: 0x050a10,
+    roughness: 0.95,
+    metalness: 0.05,
+    side: THREE.BackSide
+  });
+  const walls = new THREE.Mesh(wallGeo, wallMat);
+  scene.add(walls);
+
+  // Ground
+  const groundGeo = new THREE.PlaneGeometry(80, 80, 30, 30);
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x060c14,
+    roughness: 0.9,
+    metalness: 0.1
+  });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -4;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Crystal clusters
+  const crystalGroup = new THREE.Group();
+  scene.add(crystalGroup);
+
+  const crystalPalette = [
+    0x67e8f9, 0x22d3ee, 0x06b6d4, 0x0891b2, 0x38bdf8,
+    0xa5f3fc, 0x0e7490, 0x155e75, 0x164e63
+  ];
+
+  function createCrystal(x, y, z, scale, color) {
+    const geo = new THREE.ConeGeometry(0.15 * scale, scale, 6, 1);
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: color,
+      metalness: 0.1,
+      roughness: 0.05,
+      transmission: 0.8,
+      thickness: scale * 0.5,
+      envMapIntensity: 2,
+      clearcoat: 1,
+      clearcoatRoughness: 0.05,
+      ior: 2.1,
+      transparent: true,
+      opacity: 0.88
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, y, z);
+    mesh.rotation.x = (Math.random() - 0.5) * 0.4;
+    mesh.rotation.z = (Math.random() - 0.5) * 0.4;
+    mesh.castShadow = true;
+    return mesh;
+  }
+
+  function createCrystalCluster(cx, cz) {
+    const count = 4 + Math.floor(Math.random() * 8);
+    for (let i = 0; i < count; i++) {
+      const x = cx + (Math.random() - 0.5) * 3;
+      const z = cz + (Math.random() - 0.5) * 3;
+      const scale = 1 + Math.random() * 4;
+      const color = crystalPalette[Math.floor(Math.random() * crystalPalette.length)];
+      const c = createCrystal(x, -4 + scale * 0.5, z, scale, color);
+      crystalGroup.add(c);
+    }
+  }
+
+  // Scatter crystal clusters
+  const clusterPositions = [];
+  for (let i = 0; i < 30; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 5 + Math.random() * 25;
+    clusterPositions.push([Math.cos(angle) * radius, Math.sin(angle) * radius]);
+  }
+
+  clusterPositions.forEach(([x, z]) => createCrystalCluster(x, z));
+
+  // Central large crystal formation
+  for (let i = 0; i < 12; i++) {
+    const angle = (i / 12) * Math.PI * 2;
+    const r = 1.5 + Math.random() * 1.5;
+    const x = Math.cos(angle) * r;
+    const z = Math.sin(angle) * r;
+    const scale = 3 + Math.random() * 6;
+    const color = crystalPalette[i % crystalPalette.length];
+    const c = createCrystal(x, -4 + scale * 0.5, z, scale, color);
+    crystalGroup.add(c);
+  }
+
+  // Lights
+  const lights = [];
+
+  const lightDefs = [
+    { pos: [0, 8, 0], color: 0x67e8f9, intensity: 3, dist: 30 },
+    { pos: [-10, 3, -10], color: 0x22d3ee, intensity: 2, dist: 25 },
+    { pos: [10, 5, -8], color: 0x06b6d4, intensity: 2, dist: 25 },
+    { pos: [-8, 2, 8], color: 0x38bdf8, intensity: 1.5, dist: 20 },
+    { pos: [12, 4, 5], color: 0xa5f3fc, intensity: 1.5, dist: 20 },
+  ];
+
+  lightDefs.forEach(def => {
+    const pl = new THREE.PointLight(def.color, def.intensity, def.dist);
+    pl.position.set(...def.pos);
+    pl.castShadow = true;
+    scene.add(pl);
+    lights.push({ light: pl, baseIntensity: def.intensity, phase: Math.random() * Math.PI * 2 });
+  });
+
+  // Floating dust particles
+  const dustCount = 500;
+  const dustGeo = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(dustCount * 3);
+  const dustSizes = new Float32Array(dustCount);
+
+  for (let i = 0; i < dustCount; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 40;
+    dustPos[i * 3 + 1] = Math.random() * 20 - 5;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+    dustSizes[i] = Math.random() * 1.5 + 0.3;
+  }
+
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  dustGeo.setAttribute('size', new THREE.BufferAttribute(dustSizes, 1));
+
+  const dustMat = new THREE.PointsMaterial({
+    color: 0xa5f3fc,
+    size: 0.05,
+    transparent: true,
+    opacity: 0.4,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+
+  const dust = new THREE.Points(dustGeo, dustMat);
+  scene.add(dust);
+
+  // Stalactites on ceiling
+  for (let i = 0; i < 25; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const r = 3 + Math.random() * 20;
+    const x = Math.cos(angle) * r;
+    const z = Math.sin(angle) * r;
+    const h = 1 + Math.random() * 4;
+    const geo = new THREE.ConeGeometry(0.1 + Math.random() * 0.2, h, 6);
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0x0a1628,
+      roughness: 0.8
+    });
+    const stal = new THREE.Mesh(geo, mat);
+    stal.position.set(x, 10, z);
+    stal.rotation.x = Math.PI;
+    scene.add(stal);
+  }
+
+  // Animation
+  let scrollProgress = 0;
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+
+    // Animate point lights
+    lights.forEach(({ light, baseIntensity, phase }) => {
+      light.intensity = baseIntensity * (0.7 + 0.3 * Math.sin(elapsed * 0.8 + phase));
+    });
+
+    // Gently rotate crystal group
+    crystalGroup.rotation.y = elapsed * 0.04;
+
+    // Animate dust
+    const pos = dust.geometry.attributes.position.array;
+    for (let i = 0; i < dustCount; i++) {
+      pos[i * 3 + 1] += 0.003;
+      if (pos[i * 3 + 1] > 15) pos[i * 3 + 1] = -5;
+    }
+    dust.geometry.attributes.position.needsUpdate = true;
+
+    // Scroll-driven camera
+    const targetX = scrollProgress * 8;
+    const targetZ = 12 + scrollProgress * 5;
+    camera.position.x += (targetX - camera.position.x) * 0.03;
+    camera.position.z += (targetZ - camera.position.z) * 0.03;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('scroll', () => {
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+    scrollProgress = Math.min(window.scrollY / maxScroll, 1);
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // GSAP
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.to('.hero h1', { opacity: 1, duration: 1.5, ease: 'power3.out', delay: 0.4 });
+  gsap.to('.hero p', { opacity: 1, duration: 1.2, ease: 'power3.out', delay: 0.7 });
+  gsap.to('.hero .cta', { opacity: 1, duration: 1, ease: 'power3.out', delay: 1.1 });
+  gsap.to('.scroll-indicator', { opacity: 1, duration: 1, delay: 1.8 });
+  gsap.to('.scroll-indicator span', {
+    borderColor: 'rgba(103,232,249,0.8)',
+    duration: 0.8,
+    delay: 1.8,
+    repeat: -1,
+    yoyo: true
+  });
+
+  // Section animations
+  const sections = document.querySelectorAll('.section');
+  sections.forEach((section, i) => {
+    gsap.to(section.querySelector('h2'), {
+      opacity: 1,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: section, start: 'top 65%' }
+    });
+    gsap.to(section.querySelector('.crystal-line'), {
+      opacity: 1,
+      duration: 0.8,
+      delay: 0.3,
+      scrollTrigger: { trigger: section, start: 'top 65%' }
+    });
+    gsap.to(section.querySelector('p'), {
+      opacity: 1,
+      duration: 1,
+      delay: 0.5,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: section, start: 'top 65%' }
+    });
+    const cards = section.querySelectorAll('.crystal-card');
+    if (cards.length) {
+      gsap.to(cards, {
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.2,
+        delay: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: section, start: 'top 65%' }
+      });
+    }
+  });
+</script>
+</body>
+</html>
