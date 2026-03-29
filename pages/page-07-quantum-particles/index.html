@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Field — Next Dimension</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
+    canvas { display: block; }
+
+    .hero {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 10; pointer-events: none;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 7vw, 6rem);
+      color: #fff;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0;
+      text-shadow: 0 0 40px rgba(120,200,255,0.9), 0 0 80px rgba(120,200,255,0.5);
+    }
+    .hero p {
+      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      color: rgba(120,200,255,0.7);
+      letter-spacing: 0.5em;
+      margin-top: 1.5rem;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+    .hero .cta {
+      margin-top: 3rem;
+      padding: 0.9rem 2.5rem;
+      border: 1px solid rgba(120,200,255,0.5);
+      color: rgba(120,200,255,0.9);
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: all;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(120,200,255,0.2);
+    }
+    .hero .cta:hover {
+      background: rgba(120,200,255,0.1);
+      box-shadow: 0 0 40px rgba(120,200,255,0.5);
+    }
+
+    .section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .section .card {
+      background: rgba(10,20,40,0.6);
+      border: 1px solid rgba(120,200,255,0.2);
+      padding: 3rem;
+      max-width: 500px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      box-shadow: 0 0 60px rgba(120,200,255,0.1);
+    }
+    .section .card h2 {
+      color: rgba(120,200,255,1);
+      font-size: 1.5rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+    .section .card p {
+      color: rgba(180,220,255,0.7);
+      line-height: 1.8;
+      font-size: 0.9rem;
+    }
+
+    .spacer { height: 100vh; }
+
+    #overlay {
+      position: fixed; inset: 0; z-index: 5;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Quantum</h1>
+  <p>Enter the field</p>
+  <button class="cta">Initialize</button>
+</div>
+
+<div class="spacer"></div>
+
+<div class="section">
+  <div class="card">
+    <h2>Superposition</h2>
+    <p>Every particle exists in all states simultaneously until observed. Our technology harnesses this principle to deliver infinite possibility.</p>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="section">
+  <div class="card">
+    <h2>Entanglement</h2>
+    <p>Connected beyond space. Every element in our system responds instantly across any distance — zero latency, infinite reach.</p>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="section">
+  <div class="card">
+    <h2>Tunneling</h2>
+    <p>Barriers are an illusion. Our solutions穿透 every obstacle, emerging on the other side faster than classical physics permits.</p>
+  </div>
+</div>
+
+<div id="overlay"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+<script>
+  // ─── Scene ────────────────────────────────────────────────────────────────
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  camera.position.z = 60;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 1);
+  document.body.appendChild(renderer.domElement);
+
+  // ─── Quantum Particle System ─────────────────────────────────────────────
+  const PARTICLE_COUNT = 3500;
+  const pos = new Float32Array(PARTICLE_COUNT * 3);
+  const col = new Float32Array(PARTICLE_COUNT * 3);
+  const sizes = new Float32Array(PARTICLE_COUNT);
+
+  function rand在天前(min, max) { return min + Math.random() * (max - min); }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const i3 = i * 3;
+    // Distribute in a sphere
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = Math.pow(Math.random(), 0.5) * 70;
+    pos[i3]     = r * Math.sin(phi) * Math.cos(theta);
+    pos[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i3 + 2] = r * Math.cos(phi) - 20;
+
+    // Cyan/blue/white palette
+    const t = Math.random();
+    col[i3]     = 0.2 + t * 0.6;
+    col[i3 + 1] = 0.6 + t * 0.4;
+    col[i3 + 2] = 1.0;
+
+    sizes[i] = Math.random() * 2.5 + 0.5;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `
+      attribute float size;
+      attribute vec3 color;
+      varying vec3 vColor;
+      varying float vAlpha;
+      uniform float uTime;
+
+      void main() {
+        vColor = color;
+        vec3 p = position;
+
+        // Quantum jitter — particles constantly shift
+        float wave = sin(p.x * 0.05 + uTime * 0.8) * cos(p.y * 0.05 + uTime * 0.6);
+        p.x += wave * 1.5;
+        p.y += cos(p.z * 0.04 + uTime * 0.5) * 1.2;
+        p.z += sin(p.x * 0.03 + uTime * 0.7) * 1.0;
+
+        vec4 mvPos = modelViewMatrix * vec4(p, 1.0);
+        gl_PointSize = size * (200.0 / -mvPos.z);
+        gl_Position = projectionMatrix * mvPos;
+
+        vAlpha = 0.5 + 0.5 * sin(uTime * 1.5 + length(p) * 0.04);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      varying float vAlpha;
+
+      void main() {
+        vec2 uv = gl_PointCoord - 0.5;
+        float d = length(uv);
+        if (d > 0.5) discard;
+        float glow = 1.0 - d * 2.0;
+        glow = pow(glow, 1.5);
+        gl_FragColor = vec4(vColor, glow * vAlpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: true,
+  });
+
+  const particles = new THREE.Points(geo, mat);
+  scene.add(particles);
+
+  // ─── Orbital Rings ────────────────────────────────────────────────────────
+  const ringData = [
+    { r: 28, tube: 0.06, color: 0x4488ff, speed: 0.12, tilt: 0.3, phase: 0 },
+    { r: 38, tube: 0.04, color: 0x88ccff, speed: -0.08, tilt: 0.7, phase: 1.2 },
+    { r: 50, tube: 0.03, color: 0xaa66ff, speed: 0.06, tilt: 1.1, phase: 2.4 },
+  ];
+
+  const rings = ringData.map(d => {
+    const geo = new THREE.TorusGeometry(d.r, d.tube, 8, 120);
+    const mat = new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: 0.35 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotation.x = d.tilt;
+    mesh.userData = d;
+    scene.add(mesh);
+    return mesh;
+  });
+
+  // ─── Central Glow Sphere ──────────────────────────────────────────────────
+  const coreGeo = new THREE.SphereGeometry(3, 32, 32);
+  const coreMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: `
+      varying vec3 vNormal;
+      varying vec3 vPos;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vNormal;
+      varying vec3 vPos;
+      uniform float uTime;
+      void main() {
+        float rim = 1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
+        rim = pow(rim, 1.8);
+        vec3 col = mix(vec3(0.1, 0.5, 1.0), vec3(0.6, 0.9, 1.0), rim);
+        float pulse = 0.8 + 0.2 * sin(uTime * 2.0);
+        gl_FragColor = vec4(col * pulse, rim * 0.9 + 0.1);
+      }
+    `,
+    transparent: true,
+    side: THREE.FrontSide,
+    depthWrite: false,
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  scene.add(core);
+
+  // ─── Resize ───────────────────────────────────────────────────────────────
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  // ─── Animation ────────────────────────────────────────────────────────────
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    mat.uniforms.uTime.value = t;
+    coreMat.uniforms.uTime.value = t;
+
+    // Rotate particles cloud
+    particles.rotation.y = t * 0.04;
+    particles.rotation.x = Math.sin(t * 0.03) * 0.1;
+
+    // Orbit rings
+    rings.forEach(ring => {
+      ring.rotation.z = t * ring.userData.speed;
+      ring.material.opacity = 0.25 + 0.15 * Math.sin(t * 0.8 + ring.userData.phase);
+    });
+
+    // Pulse core
+    const s = 1 + 0.05 * Math.sin(t * 2.0);
+    core.scale.set(s, s, s);
+
+    camera.position.x = Math.sin(t * 0.1) * 5;
+    camera.position.y = Math.cos(t * 0.08) * 5;
+    camera.lookAt(0, 0, -20);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // ─── GSAP Animations ─────────────────────────────────────────────────────
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.to('.hero h1', { opacity: 1, y: 0, duration: 1.5, ease: 'power3.out', delay: 0.3 });
+  gsap.to('.hero p',  { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', delay: 0.7 });
+  gsap.to('.hero .cta', { opacity: 1, duration: 1, ease: 'power2.out', delay: 1.2 });
+
+  gsap.from('.hero h1', { y: 40, duration: 1.5, ease: 'power3.out', delay: 0.3 });
+
+  document.querySelectorAll('.section .card').forEach((card, i) => {
+    gsap.to(card, {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 75%',
+        end: 'bottom 25%',
+        toggleActions: 'play none none reverse',
+      },
+      duration: 1,
+      delay: i * 0.1,
+    });
+  });
+</script>
+</body>
+</html>
