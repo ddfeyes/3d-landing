@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Nebula — Beyond the Stars</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow-x: hidden; font-family: 'Segoe UI', sans-serif; }
+    canvas { position: fixed; top: 0; left: 0; z-index: 0; }
+
+    .hero {
+      position: relative; z-index: 10;
+      height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 7rem);
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0;
+      background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4, #a855f7);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: rgba(255,255,255,0.55);
+      margin-top: 1.5rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+
+    .hero .cta {
+      margin-top: 3rem;
+      padding: 1rem 3rem;
+      border: 1px solid rgba(168,85,247,0.6);
+      color: #a855f7;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.9rem;
+      pointer-events: all;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(168,85,247,0.2);
+    }
+
+    .hero .cta:hover {
+      background: rgba(168,85,247,0.15);
+      box-shadow: 0 0 40px rgba(168,85,247,0.4);
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .section {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 6rem 2rem;
+    }
+
+    .section h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0;
+    }
+
+    .section p {
+      color: rgba(255,255,255,0.5);
+      max-width: 600px;
+      text-align: center;
+      margin-top: 1.5rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+      opacity: 0;
+    }
+
+    .glow-line {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, #a855f7, transparent);
+      margin: 2rem auto;
+      opacity: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      width: 100%;
+      margin-top: 4rem;
+    }
+
+    .card {
+      border: 1px solid rgba(168,85,247,0.2);
+      padding: 2rem;
+      text-align: center;
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .card:hover {
+      border-color: rgba(168,85,247,0.6);
+      box-shadow: 0 0 30px rgba(168,85,247,0.15);
+    }
+
+    .card h3 {
+      color: #a855f7;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .card p {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.9rem;
+      margin-top: 0.8rem;
+    }
+
+    .scroll-indicator {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      opacity: 0;
+    }
+
+    .scroll-indicator span {
+      display: block; width: 20px; height: 20px;
+      border-right: 2px solid rgba(255,255,255,0.4);
+      border-bottom: 2px solid rgba(255,255,255,0.4);
+      transform: rotate(45deg);
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.4; }
+      50% { transform: rotate(45deg) translate(5px, 5px); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="nebula"></canvas>
+
+<div class="hero">
+  <h1>Cosmic Nebula</h1>
+  <p>Where Stars Are Born</p>
+  <button class="cta">Explore the Void</button>
+</div>
+
+<div class="section">
+  <h2>The Universe Breathes</h2>
+  <div class="glow-line"></div>
+  <p>Every star you see was forged in the heart of a nebula. Clouds of gas and dust, millions of light-years wide, collapsing into nuclear fire.</p>
+  <div class="grid-3">
+    <div class="card">
+      <h3>Stellar Nurseries</h3>
+      <p>Clouds of hydrogen and helium collapse under gravity to ignite new stars.</p>
+    </div>
+    <div class="card">
+      <h3>Color Chemistry</h3>
+      <p>Ionized gases emit specific wavelengths — hydrogen glows red, oxygen blue-green.</p>
+    </div>
+    <div class="card">
+      <h3>Death & Rebirth</h3>
+      <p>Supernovae scatter heavy elements across the cosmos, seeding new worlds.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Deep Field</h2>
+  <div class="glow-line"></div>
+  <p>The Hubble Deep Field captured thousands of galaxies in a patch of sky no larger than a grain of sand held at arm's length.</p>
+</div>
+
+<div class="scroll-indicator"><span></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+
+<script>
+  // Scene setup
+  const canvas = document.getElementById('nebula');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.z = 5;
+
+  // Shader for nebula
+  const nebulaVertexShader = `
+    varying vec2 vUv;
+    varying vec3 vPosition;
+    void main() {
+      vUv = uv;
+      vPosition = position;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const nebulaFragmentShader = `
+    uniform float uTime;
+    uniform vec2 uResolution;
+    varying vec2 vUv;
+    varying vec3 vPosition;
+
+    float noise(vec2 p) {
+      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    }
+
+    float smoothNoise(vec2 p) {
+      vec2 i = floor(p);
+      vec2 f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      float a = noise(i);
+      float b = noise(i + vec2(1.0, 0.0));
+      float c = noise(i + vec2(0.0, 1.0));
+      float d = noise(i + vec2(1.0, 1.0));
+      return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    }
+
+    float fbm(vec2 p) {
+      float value = 0.0;
+      float amplitude = 0.5;
+      for (int i = 0; i < 6; i++) {
+        value += amplitude * smoothNoise(p);
+        p *= 2.0;
+        amplitude *= 0.5;
+      }
+      return value;
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      float t = uTime * 0.08;
+
+      vec2 q = vec2(fbm(uv + t), fbm(uv + vec2(1.0)));
+      vec2 r = vec2(fbm(uv + 1.0 * q + vec2(1.7, 9.2) + 0.15 * t),
+                    fbm(uv + 1.0 * q + vec2(8.3, 2.8) + 0.126 * t));
+
+      float f = fbm(uv + r);
+
+      vec3 col1 = vec3(0.4, 0.1, 0.8);   // purple
+      vec3 col2 = vec3(0.1, 0.4, 0.9);   // blue
+      vec3 col3 = vec3(0.0, 0.8, 0.7);   // cyan
+      vec3 col4 = vec3(0.8, 0.1, 0.4);   // magenta
+
+      vec3 color = mix(col1, col2, clamp(f * f * 4.0, 0.0, 1.0));
+      color = mix(color, col3, clamp(length(q), 0.0, 1.0));
+      color = mix(color, col4, clamp(length(r.x), 0.0, 1.0));
+
+      color = (f * f * f + 0.6 * f * f + 0.5 * f) * color;
+
+      float glow = pow(1.0 - length(uv - 0.5) * 1.4, 2.0);
+      color += glow * vec3(0.3, 0.1, 0.6) * 0.5;
+
+      gl_FragColor = vec4(color, 0.85);
+    }
+  `;
+
+  const nebulaMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+    },
+    vertexShader: nebulaVertexShader,
+    fragmentShader: nebulaFragmentShader,
+    transparent: true,
+    side: THREE.DoubleSide
+  });
+
+  const nebulaGeo = new THREE.SphereGeometry(15, 64, 64);
+  const nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMaterial);
+  scene.add(nebulaMesh);
+
+  // Star particles
+  const starCount = 2000;
+  const starGeo = new THREE.BufferGeometry();
+  const starPositions = new Float32Array(starCount * 3);
+  const starSizes = new Float32Array(starCount);
+
+  for (let i = 0; i < starCount; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 20 + Math.random() * 30;
+    starPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    starPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    starPositions[i * 3 + 2] = r * Math.cos(phi);
+    starSizes[i] = Math.random() * 2 + 0.5;
+  }
+
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+
+  const starVertexShader = `
+    attribute float size;
+    uniform float uTime;
+    varying float vAlpha;
+    void main() {
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * (300.0 / -mvPosition.z);
+      gl_Position = projectionMatrix * mvPosition;
+      vAlpha = 0.6 + 0.4 * sin(uTime * 2.0 + position.x * 0.5);
+    }
+  `;
+
+  const starFragmentShader = `
+    varying float vAlpha;
+    void main() {
+      float d = length(gl_PointCoord - 0.5);
+      if (d > 0.5) discard;
+      float alpha = 1.0 - d * 2.0;
+      gl_FragColor = vec4(1.0, 1.0, 1.0, alpha * vAlpha);
+    }
+  `;
+
+  const starMaterial = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 } },
+    vertexShader: starVertexShader,
+    fragmentShader: starFragmentShader,
+    transparent: true,
+    depthWrite: false
+  });
+
+  const stars = new THREE.Points(starGeo, starMaterial);
+  scene.add(stars);
+
+  // Nebula core glow
+  const coreGeo = new THREE.SphereGeometry(1.5, 32, 32);
+  const coreMat = new THREE.MeshBasicMaterial({
+    color: 0x8833ff,
+    transparent: true,
+    opacity: 0.15
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  scene.add(core);
+
+  const core2Geo = new THREE.SphereGeometry(0.8, 32, 32);
+  const core2Mat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.6
+  });
+  const core2 = new THREE.Mesh(core2Geo, core2Mat);
+  scene.add(core2);
+
+  // Animation
+  let scrollProgress = 0;
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+
+    nebulaMaterial.uniforms.uTime.value = elapsed;
+    starMaterial.uniforms.uTime.value = elapsed;
+
+    nebulaMesh.rotation.y = elapsed * 0.03;
+    nebulaMesh.rotation.x = elapsed * 0.01;
+    stars.rotation.y = elapsed * 0.01;
+    stars.rotation.z = elapsed * 0.005;
+
+    core.scale.setScalar(1 + 0.15 * Math.sin(elapsed * 0.8));
+    core2.scale.setScalar(1 + 0.2 * Math.sin(elapsed * 1.2 + 1));
+
+    // Scroll-driven camera
+    const targetZ = 5 + scrollProgress * 20;
+    camera.position.z += (targetZ - camera.position.z) * 0.05;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Scroll tracking
+  window.addEventListener('scroll', () => {
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+    scrollProgress = Math.min(window.scrollY / maxScroll, 1);
+  });
+
+  // Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    nebulaMaterial.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+  });
+
+  // GSAP animations
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.to('.hero h1', { opacity: 1, y: 0, duration: 1.5, ease: 'power3.out', delay: 0.5 });
+  gsap.to('.hero p', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', delay: 0.8 });
+  gsap.to('.hero .cta', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 1.2 });
+  gsap.to('.scroll-indicator', { opacity: 1, duration: 1, delay: 2 });
+
+  gsap.to({}, {
+    scrollTrigger: { trigger: '.section', start: 'top 70%' },
+    duration: 1,
+    onStart: () => {
+      gsap.to('.section h2', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.2 });
+      gsap.to('.glow-line', { opacity: 1, duration: 0.8, delay: 0.3 });
+      gsap.to('.section p', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.5 });
+      gsap.to('.card', { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, delay: 0.7, ease: 'power2.out' });
+    }
+  });
+
+  gsap.to({}, {
+    scrollTrigger: { trigger: '.section:last-of-type', start: 'top 70%' },
+    duration: 1,
+    onStart: () => {
+      gsap.to('.section:last-of-type h2', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
+      gsap.to('.section:last-of-type .glow-line', { opacity: 1, duration: 0.8, delay: 0.3 });
+      gsap.to('.section:last-of-type p', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.5 });
+    }
+  });
+</script>
+</body>
+</html>
